@@ -2,7 +2,7 @@ name: bheeshmaorganics
 description: A new Flutter project.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.2 <4.0.0'
+  sdk: ">=3.1.2 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -31,10 +31,28 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  dartz: ^0.10.1
+  equatable: ^2.0.5
+  google_one_tap_sign_in: ^1.0.3
+  flutter_bloc: ^8.1.3
+  shared_preferences: ^2.2.2
+  google_fonts: ^6.1.0
+  feather_icons: ^1.2.0
+  flutter_svg: ^2.0.9
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  pinput: ^3.0.1
+  carousel_slider: ^4.2.1
+  provider: ^6.1.1
+  awesome_snackbar_content:
+    git: https://github.com/ManasMalla/awesome_snackbar_content.git
+  share_plus: ^7.2.1
+  url_launcher: ^6.2.3
+  http: ^1.1.0
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:
@@ -52,15 +70,15 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/images/
+    - assets/icons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -74,12 +92,18 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+  fonts:
+    - family: Gilroy
+      fonts:
+        - asset: fonts/Gilroy-Regular.ttf
+        - asset: fonts/Gilroy-Bold.ttf
+          weight: 700
+        - asset: fonts/Gilroy-ExtraBold.ttf
+          weight: 800
+        - asset: fonts/Gilroy-Light.ttf
+          weight: 300
+        - asset: fonts/Gilroy-Medium.ttf
+          weight: 500
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

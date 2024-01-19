@@ -1,0 +1,15 @@
+<svg width="390" height="239" viewBox="0 0 390 239" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M69 21L-0.5 97.5V245H393.5V79.5L290.5 0L225 79.5L172 40.5L130.5 79.5L69 21Z" fill="#D4E28D"/>
+<path d="M15 107.5L69 49L130.5 107.5L172 68.5L225 107.5L290.5 28L381 96" stroke="black" stroke-width="7"/>
+<path d="M17 179.5C33.6667 181.5 68.4 194.1 74 228.5" stroke="black" stroke-width="7"/>
+<path d="M371 173C352.287 175.245 313.288 189.388 307 228" stroke="black" stroke-width="7"/>
+<path d="M249.938 208.19L190.084 212.374" stroke="black" stroke-width="8" stroke-linecap="square"/>
+<circle cx="154.537" cy="162.731" r="28" transform="rotate(-3.99821 154.537 162.731)" stroke="black" stroke-width="8"/>
+<circle cx="234.342" cy="157.153" r="28" transform="rotate(-3.99821 234.342 157.153)" stroke="black" stroke-width="8"/>
+<circle cx="29.5" cy="201.5" r="4.5" fill="black"/>
+<circle cx="41.5" cy="216.5" r="4.5" fill="black"/>
+<circle cx="25.5" cy="220.5" r="4.5" fill="black"/>
+<circle cx="5.5" cy="5.5" r="5.5" transform="matrix(-1 0 0 1 360 192)" fill="black"/>
+<circle cx="5.5" cy="5.5" r="5.5" transform="matrix(-1 0 0 1 346 210)" fill="black"/>
+<circle cx="5.5" cy="5.5" r="5.5" transform="matrix(-1 0 0 1 365 215)" fill="black"/>
+</svg>

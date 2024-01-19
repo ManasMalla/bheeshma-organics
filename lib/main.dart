@@ -1,52 +1,105 @@
+import 'package:bheeshmaorganics/data/providers/address_provider.dart';
+import 'package:bheeshmaorganics/data/providers/cart_provider.dart';
+import 'package:bheeshmaorganics/data/providers/category_provider.dart';
+import 'package:bheeshmaorganics/data/providers/coupon_provider.dart';
+import 'package:bheeshmaorganics/data/providers/liked_provider.dart';
+import 'package:bheeshmaorganics/data/providers/order_provider.dart';
+import 'package:bheeshmaorganics/data/providers/product_provider.dart';
+import 'package:bheeshmaorganics/data/utils/get_themed_color.dart';
+import 'package:bheeshmaorganics/firebase_options.dart';
+import 'package:bheeshmaorganics/presentation/basket/basket_sheet.dart';
+import 'package:bheeshmaorganics/presentation/basket/order_page.dart';
+import 'package:bheeshmaorganics/presentation/basket/review_page.dart';
+import 'package:bheeshmaorganics/presentation/bheeshma_logo.dart';
+import 'package:bheeshmaorganics/presentation/explore/explore_page.dart';
+import 'package:bheeshmaorganics/presentation/home/home_page.dart';
+import 'package:bheeshmaorganics/presentation/notifications/notification_page.dart';
+import 'package:bheeshmaorganics/presentation/onboarding/login_page.dart';
+import 'package:bheeshmaorganics/presentation/onboarding/splash_screen.dart';
+import 'package:bheeshmaorganics/presentation/product/product_list_grid.dart';
+import 'package:bheeshmaorganics/presentation/product/product_page.dart';
+import 'package:bheeshmaorganics/presentation/profile/my_orders_page.dart';
+import 'package:bheeshmaorganics/presentation/profile/profile_page.dart';
+import 'package:bheeshmaorganics/presentation/profile/wishlist_page.dart';
+import 'package:feather_icons/feather_icons.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => CartProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => LikedItemsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CouponProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AddressProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => OrderProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ProductProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CategoryProvider(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Bheeshma Organics',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF006738)),
         useMaterial3: true,
+        fontFamily: 'Gilroy',
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF006738), brightness: Brightness.dark),
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        fontFamily: 'Gilroy',
+      ),
+      initialRoute: '/splash',
+      routes: {
+        '/splash': (context) => const SplashScreen(),
+        '/home': (context) => const MyHomePage(title: 'Bheeshma Organics'),
+        '/review': (context) => const ReviewPage(),
+        '/profile': (context) => const ProfilePage(),
+        '/login': (context) => const LoginPage(),
+        '/product': (context) => const ProductPage(),
+        '/wishlist': (context) => const WishlistPage(),
+        '/notifications': (context) => const NotificationPage(),
+        '/order-status': (context) => const OrderPage(),
+        '/orders': (context) => const MyOrdersPage(),
+      },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -55,71 +108,184 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  int pageIndex = 0;
+  final searchController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    searchController.addListener(() {
+      setState(() {});
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: pageIndex,
+        backgroundColor: getThemedColor(
+            context, const Color(0xFFEAEFD1), Color.fromARGB(255, 32, 32, 30)),
+        indicatorColor: getThemedColor(
+            context, const Color(0xFFD4E28D), Color.fromARGB(255, 50, 52, 42)),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_rounded),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(FeatherIcons.compass),
+            label: 'Explore',
+          ),
+          NavigationDestination(
+            icon: Icon(FeatherIcons.shoppingCart),
+            label: 'Cart',
+          ),
+        ],
+        onDestinationSelected: (page) {
+          if (page == 2) {
+            showModalBottomSheet(
+                backgroundColor: const Color(0xFF699E81),
+                context: context,
+                builder: (context) {
+                  return const BasketBottomSheet();
+                });
+            return;
+          }
+          setState(() {
+            pageIndex = page;
+          });
+        },
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      appBar: pageIndex == 0
+          ? homeScreenAppBar(context, searchController)
+          : AppBar(
+              leading: IconButton(
+                onPressed: () {
+                  setState(() {
+                    pageIndex = 0;
+                  });
+                },
+                icon: const Icon(
+                  FeatherIcons.arrowLeft,
+                ),
+                color: Colors.white,
+              ),
+              backgroundColor: getThemedColor(context, const Color(0xFFD4E28D),
+                  const Color.fromARGB(255, 41, 43, 35)),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: searchController.text.isNotEmpty
+          ? Consumer<ProductProvider>(builder: (context, productProvider, _) {
+              return Scaffold(
+                body: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    children: [
+                      productProvider.products
+                              .where((element) =>
+                                  element.name.contains(searchController.text))
+                              .isEmpty
+                          ? Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/images/hungry.svg',
+                                    colorFilter: ColorFilter.mode(
+                                        getThemedColor(
+                                            context,
+                                            const Color(0x60074014),
+                                            const Color(0x60699E81)),
+                                        BlendMode.srcIn),
+                                    width: 170,
+                                  ),
+                                  SizedBox(
+                                    height: 24,
+                                  ),
+                                  Text(
+                                    'No search results found for "${searchController.text}"',
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  FeatherIcons.search,
+                                  size: 16,
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                Text(
+                                  'Search results for "${searchController.text}"',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ],
+                            ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      ProductGridList(productProvider.products
+                          .where((element) =>
+                              element.name.contains(searchController.text))
+                          .toList()),
+                    ],
+                  ),
+                ),
+              );
+            })
+          : pageIndex == 0
+              ? const HomePage()
+              : const ExplorePage(),
     );
   }
+}
+
+PreferredSizeWidget homeScreenAppBar(BuildContext context, searchContorller) {
+  return AppBar(
+    toolbarHeight: 72,
+    backgroundColor: getThemedColor(context, const Color(0xFFD4E28D),
+        const Color.fromARGB(255, 41, 43, 35)),
+    title: SizedBox(
+      height: 48,
+      child: TextField(
+        controller: searchContorller,
+        decoration: InputDecoration(
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+          isDense: true,
+          filled: true,
+          hintText: 'Search',
+          fillColor: const Color(0x50787F54),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide.none),
+        ),
+      ),
+    ),
+    actions: [
+      IconButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed('/notifications');
+        },
+        icon: const Icon(FeatherIcons.bell),
+      ),
+      IconButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed('/profile');
+        },
+        icon: const Icon(FeatherIcons.user),
+      ),
+    ],
+    leading: const Center(
+      child: BheeshmaOrganicsLogo(
+        height: 36,
+      ),
+    ),
+  );
 }

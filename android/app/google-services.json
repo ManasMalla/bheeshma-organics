@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "28134828757",
+    "project_id": "bheeshma-naturals",
+    "storage_bucket": "bheeshma-naturals.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28134828757:android:1c75dd1c614e6aeb78905c",
+        "android_client_info": {
+          "package_name": "com.manasmalla.bheeshmaorganics"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVemrJYU7JAXypa2LNHN1SKWy7rG3fkqI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
