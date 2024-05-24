@@ -1,4 +1,3 @@
-import 'package:bheeshmaorganics/data/entitites/cart_item.dart';
 import 'package:bheeshmaorganics/data/entitites/product.dart';
 import 'package:bheeshmaorganics/data/providers/cart_provider.dart';
 import 'package:bheeshmaorganics/data/providers/liked_provider.dart';
@@ -30,7 +29,7 @@ class ExploreProductCard extends StatelessWidget {
           final existInCart =
               doesProductExistInCart(cartProvider.cart, product, -1);
           return Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -45,32 +44,20 @@ class ExploreProductCard extends StatelessWidget {
               const SizedBox(
                 height: 16,
               ),
+              Text(
+                product.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    product.name,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '₹${product.price.entries.first.value.toInt()}',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        decoration: product.discount > 0
-                            ? TextDecoration.lineThrough
-                            : null,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF699E81).withOpacity(0.6),
-                        decorationColor:
-                            const Color(0xFF699E81).withOpacity(0.7)),
-                  ),
-                  SizedBox(
-                    width: product.discount > 0 ? 6 : 0,
-                  ),
-                  product.discount > 0
+                  product.price.first.discount > 0
                       ? Text(
-                          '₹${product.discountedPrices.entries.first.value.toInt()}',
+                          '₹${product.discountedPrices.first.price.toInt()}',
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
@@ -80,28 +67,46 @@ class ExploreProductCard extends StatelessWidget {
                       : const SizedBox(
                           width: 0,
                         ),
+                  SizedBox(
+                    width: product.price.first.discount > 0 ? 6 : 0,
+                  ),
+                  Text(
+                    '₹${product.price.first.price.toInt()}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        decoration: product.price.first.discount > 0
+                            ? TextDecoration.lineThrough
+                            : null,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF699E81).withOpacity(
+                            product.price.first.discount <= 0 ? 1 : 0.6),
+                        decorationColor:
+                            const Color(0xFF699E81).withOpacity(0.7)),
+                  ),
+                  product.price.first.discount > 0
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 4),
+                          child: Text(
+                            '(${((product.price.first.discount * 100) / product.price.first.price).round()}${'%'} off)',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          ),
+                        )
+                      : const SizedBox(
+                          width: 0,
+                        ),
                 ],
               ),
-              product.discount > 0
-                  ? Text(
-                      '(${product.discount}${product.discountType == DiscountType.percentage ? '%' : '₹'} off)',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                    )
-                  : const SizedBox(
-                      height: 16,
-                    ),
               Text(
                 product.description,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.normal,
                     ),
-                maxLines: 4,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(
-                height: 8,
               ),
               Row(
                 children: [
@@ -113,7 +118,7 @@ class ExploreProductCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     padding:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 24),
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
                     onPressed: () {
                       if (existInCart) {
                         showModifyCartBottomSheet(
@@ -139,7 +144,7 @@ class ExploreProductCard extends StatelessWidget {
                                 width: 12,
                               ),
                               Text(
-                                'Modify'.toUpperCase(),
+                                'Modify',
                                 style: Theme.of(context)
                                     .textTheme
                                     .labelSmall
@@ -150,7 +155,7 @@ class ExploreProductCard extends StatelessWidget {
                             ],
                           )
                         : Text(
-                            'Add to cart'.toUpperCase(),
+                            'Add to cart',
                             style: Theme.of(context)
                                 .textTheme
                                 .labelSmall
@@ -164,7 +169,7 @@ class ExploreProductCard extends StatelessWidget {
                           ),
                   ),
                   const SizedBox(
-                    width: 12,
+                    width: 8,
                   ),
                   SizedBox(
                     width: 40,

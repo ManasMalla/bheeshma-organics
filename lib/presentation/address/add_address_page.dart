@@ -5,7 +5,6 @@ import 'package:bheeshmaorganics/data/providers/address_provider.dart';
 import 'package:bheeshmaorganics/data/utils/get_themed_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 
 class AddAddressPage extends StatefulWidget {
@@ -32,7 +31,6 @@ class _AddAddressPageState extends State<AddAddressPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     nameController = TextEditingController(text: widget.address?.name);
     doorNumberController =
@@ -57,17 +55,38 @@ class _AddAddressPageState extends State<AddAddressPage> {
             Container(
               color: Colors.yellow,
               height: 300,
-              child: Column(
+              width: double.infinity,
+              child: Stack(
                 children: [
-                  Align(
-                    alignment: Alignment.bottomLeft,
+                  Positioned(
+                    bottom: 64,
                     child: SvgPicture.asset(
                       'assets/icons/logo.svg',
                       height: 100,
-                      color: Colors.amber.shade400.withOpacity(0.5),
+                      colorFilter: ColorFilter.mode(
+                        Colors.amber.shade400.withOpacity(0.5),
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
-                  Spacer(),
+                  Positioned(
+                    child: Container(
+                      height: 72,
+                      color: Colors.amber.shade400,
+                    ),
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                  ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 18,
+                    child: SvgPicture.asset(
+                      "assets/images/delivery-address.svg",
+                      height: 300,
+                    ),
+                  ),
                   Align(
                     alignment: Alignment.topRight,
                     child: Transform.rotate(
@@ -75,7 +94,10 @@ class _AddAddressPageState extends State<AddAddressPage> {
                       child: SvgPicture.asset(
                         'assets/icons/logo.svg',
                         height: 100,
-                        color: Colors.amber.shade400.withOpacity(0.5),
+                        colorFilter: ColorFilter.mode(
+                          Colors.amber.shade400.withOpacity(0.5),
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                   ),
@@ -87,13 +109,13 @@ class _AddAddressPageState extends State<AddAddressPage> {
               child: Column(
                 children: [
                   Text(
-                    "Add Address".toUpperCase(),
+                    "Add Address",
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   Text(
-                    "Where should we ship your fresh food?".toUpperCase(),
+                    "Where should we ship your fresh food?",
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(
@@ -109,7 +131,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
                     ),
                     controller: nameController,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   Row(
@@ -216,8 +238,8 @@ class _AddAddressPageState extends State<AddAddressPage> {
                           "Chandigarh",
                         ].map((e) {
                           return DropdownMenuItem(
-                            child: Text(e),
                             value: e,
+                            child: Text(e),
                           );
                         }).toList(),
                         borderRadius: BorderRadius.circular(8),
@@ -300,6 +322,18 @@ class _AddAddressPageState extends State<AddAddressPage> {
                       builder: (context, addressProvider, _) {
                     return FilledButton(
                       onPressed: () {
+                        if (nameController.text.isEmpty ||
+                            doorNumberController.text.isEmpty ||
+                            buildingController.text.isEmpty ||
+                            streetController.text.isEmpty ||
+                            cityController.text.isEmpty ||
+                            pincodeController.text.isEmpty ||
+                            phoneNumberController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('Please fill all the fields'),
+                          ));
+                          return;
+                        }
                         final newAddress = Address(
                           name: nameController.text,
                           doorNumber: doorNumberController.text,

@@ -3,6 +3,7 @@ import 'package:bheeshmaorganics/data/providers/cart_provider.dart';
 import 'package:bheeshmaorganics/data/providers/liked_provider.dart';
 import 'package:bheeshmaorganics/data/utils/cart_utll.dart';
 import 'package:bheeshmaorganics/data/utils/get_themed_color.dart';
+import 'package:bheeshmaorganics/presentation/product/modify_cart_sheet.dart';
 import 'package:bheeshmaorganics/presentation/product/show_quantity_selection_sheet.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
@@ -33,12 +34,29 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    product.name,
+                    product.name.contains(" | ")
+                        ? product.name.split(" | ")[0]
+                        : product.name,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                   ),
+                  product.name.contains(" | ")
+                      ? Text(
+                          product.name.split(" | ").skip(1).join(" | "),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .secondary
+                                      .withOpacity(0.7)),
+                        )
+                      : SizedBox(),
                   Text(
                     product.description,
                     maxLines: 1,
@@ -50,7 +68,7 @@ class ProductCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        "Rs. ${productPrices.entries.first.value}",
+                        "Rs. ${productPrices.first.price}",
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w500,
@@ -58,7 +76,7 @@ class ProductCard extends StatelessWidget {
                                 ),
                       ),
                       Text(
-                        "/${productPrices.entries.first.key}",
+                        "/${productPrices.first.quantity}",
                       )
                     ],
                   ),
@@ -73,10 +91,17 @@ class ProductCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         padding: const EdgeInsets.symmetric(
-                            vertical: 0, horizontal: 24),
+                            vertical: 0, horizontal: 16),
                         onPressed: () {
                           if (existInCart) {
-                            //TODO MODIFY CART
+                            showModifyCartBottomSheet(
+                                context,
+                                product,
+                                cartProvider.cart
+                                    .where((element) =>
+                                        element.productId == product.id)
+                                    .toList());
+
                             return;
                           } else {
                             showQuantitySelectionBottomSheet(context, product);
@@ -95,8 +120,7 @@ class ProductCard extends StatelessWidget {
                               width: 16,
                             ),
                             Text(
-                              (existInCart ? 'Modify Cart' : 'Add to cart')
-                                  .toUpperCase(),
+                              (existInCart ? 'Modify Cart' : 'Add to cart'),
                               style: Theme.of(context)
                                   .textTheme
                                   .labelSmall

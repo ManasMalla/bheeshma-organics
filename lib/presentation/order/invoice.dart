@@ -3,6 +3,7 @@ import 'package:bheeshmaorganics/data/utils/discount_type.dart';
 import 'package:bheeshmaorganics/presentation/order/order_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
 class InvoicePage extends StatelessWidget {
   final Order order;
@@ -19,17 +20,14 @@ class InvoicePage extends StatelessWidget {
           ),
           SvgPicture.asset(
             'assets/images/bheeshma-naturals.svg',
+            height: 100,
             colorFilter: Theme.of(context).brightness == Brightness.dark
-                ? ColorFilter.mode(
+                ? const ColorFilter.mode(
                     Colors.white,
                     BlendMode.srcIn,
                   )
                 : null,
           ),
-          const SizedBox(
-            height: 16,
-          ),
-          Text('Never before price - Ever after quality'.toUpperCase()),
           const SizedBox(
             height: 24,
           ),
@@ -48,9 +46,9 @@ class InvoicePage extends StatelessWidget {
           ),
           Row(
             children: [
-              Text('Time'.toUpperCase()),
+              Text('Time'),
               const Spacer(),
-              const Text('11:00 PM'),
+              Text(DateFormat('hh:mm a').format(order.date)),
             ],
           ),
           const SizedBox(
@@ -58,19 +56,9 @@ class InvoicePage extends StatelessWidget {
           ),
           Row(
             children: [
-              Text('Date'.toUpperCase()),
+              Text('Date'),
               const Spacer(),
-              const Text('13-01-2024'),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Row(
-            children: [
-              Text('GSTIN'.toUpperCase()),
-              const Spacer(),
-              const Text('APLM1234567890123456PAN'),
+              Text(DateFormat('dd-MM-yyyy').format(order.date)),
             ],
           ),
           const SizedBox(
@@ -110,7 +98,7 @@ class InvoicePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total'.toUpperCase(),
+                'Total',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       letterSpacing: 2.5,
                       fontWeight: FontWeight.bold,
@@ -137,10 +125,10 @@ class InvoicePage extends StatelessWidget {
                 : Row(
                     children: [
                       Text(
-                        'Discount '.toUpperCase(),
+                        'Discount ',
                       ),
                       Text(
-                        '(${coupon.code} applied)'.toUpperCase(),
+                        '(${coupon.code} applied)',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: Theme.of(context)
@@ -159,31 +147,13 @@ class InvoicePage extends StatelessWidget {
                   );
           }),
           const SizedBox(
-            height: 16,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Delivery Charge'.toUpperCase(),
-              ),
-              const Text(
-                'Rs. 100.00',
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          const Divider(),
-          const SizedBox(
             height: 8,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Grand Total'.toUpperCase(),
+                'Grand Total',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -194,7 +164,7 @@ class InvoicePage extends StatelessWidget {
                       (value, element) => value + element,
                     ) - (order.coupon == null ? 0 : order.coupon!.type == DiscountType.percentage ? (order.coupon!.discount * 0.01 * order.products.map((e) => (e.price) * ((e.quantity))).reduce(
                       (value, element) => value + element,
-                    )) : order.coupon!.discount) + 100.00}',
+                    )) : order.coupon!.discount)}',
               ),
             ],
           ),

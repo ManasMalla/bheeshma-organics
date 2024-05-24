@@ -38,12 +38,12 @@ class AddressCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                address.type.toUpperCase(),
+                address.type,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: selected ? Colors.black : Colors.white,
                     ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 160,
               ),
               canEdit
@@ -54,46 +54,45 @@ class AddressCard extends StatelessWidget {
                                   address: address,
                                 )));
                       },
-                      child: Icon(
+                      child: const Icon(
                         FeatherIcons.edit,
                         size: 20,
                         color: Colors.white,
                       ),
                     )
-                  : SizedBox(
+                  : const SizedBox(
                       width: 20,
                     ),
               canEdit
-                  ? SizedBox(
+                  ? const SizedBox(
                       width: 12,
                     )
-                  : SizedBox(),
+                  : const SizedBox(),
               canEdit
                   ? InkWell(
                       onTap: () {
                         onDelete();
                       },
-                      child: Icon(
+                      child: const Icon(
                         FeatherIcons.trash,
                         size: 20,
                         color: Colors.white,
                       ),
                     )
-                  : SizedBox(
+                  : const SizedBox(
                       width: 20,
                     ),
             ],
           ),
           Text(
-            address.name.toUpperCase(),
+            address.name,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: selected ? Colors.black : Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
           ),
           Text(
-            '${address.doorNumber}, ${address.building}\n${address.landmark}\n${address.street}\n${address.city}\n${address.state} - ${address.pincode}'
-                .toUpperCase(),
+            '${address.doorNumber}, ${address.building}\n${address.landmark}\n${address.street}\n${address.city}\n${address.state} - ${address.pincode}',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: selected ? Colors.black : Colors.white,
                 ),
@@ -105,7 +104,7 @@ class AddressCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Contact: '.toUpperCase(),
+                'Contact: ',
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: selected ? Colors.black : Colors.white,

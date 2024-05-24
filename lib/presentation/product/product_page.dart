@@ -1,11 +1,16 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:bheeshmaorganics/data/entitites/cart_item.dart';
 import 'package:bheeshmaorganics/data/providers/cart_provider.dart';
 import 'package:bheeshmaorganics/data/providers/product_provider.dart';
 import 'package:bheeshmaorganics/data/utils/cart_utll.dart';
 import 'package:bheeshmaorganics/data/utils/get_themed_color.dart';
+import 'package:bheeshmaorganics/presentation/bheeshma_snackbar.dart';
+import 'package:bheeshmaorganics/presentation/product/modify_cart_sheet.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -18,7 +23,9 @@ class _ProductPageState extends State<ProductPage> {
   var quantitySelection = 0;
   @override
   Widget build(BuildContext context) {
-    final productId = ModalRoute.of(context)?.settings.arguments as int;
+    final productId = int.tryParse(
+            ModalRoute.of(context)?.settings.arguments.toString() ?? "") ??
+        0;
     return Scaffold(
       body: Consumer<ProductProvider>(builder: (context, productProvider, _) {
         final product = productProvider.products
@@ -33,7 +40,7 @@ class _ProductPageState extends State<ProductPage> {
                 child: Column(
                   children: [
                     Image.network(
-                      product.cover,
+                      product.image,
                       height: 350,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -43,63 +50,63 @@ class _ProductPageState extends State<ProductPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text(
+                            product.name.contains("|")
+                                ? product.name.split(" | ").first
+                                : product.name,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          product.name.contains("|")
+                              ? Text(
+                                  product.name.split(" | ").skip(1).join(" | "),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withOpacity(0.5),
+                                          fontWeight: FontWeight.w700),
+                                )
+                              : SizedBox(),
+                          SizedBox(
+                            height: 12,
+                          ),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      product.name.toUpperCase(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .displaySmall
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                    GridView.builder(
-                                      padding: EdgeInsets.zero,
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        childAspectRatio: 2.5,
-                                        mainAxisSpacing: 12,
-                                        crossAxisSpacing: 12,
-                                      ),
-                                      itemBuilder: (context, index) {
-                                        return Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: FilterChip(
-                                            label: Text(product.price.keys
-                                                .toList()[index]),
-                                            onSelected: (_) {
+                                child: Wrap(
+                                  children: product.price.map((e) {
+                                    final index = product.price.indexOf(e);
+                                    return FilterChip(
+                                      label: Text(e.quantity),
+                                      onSelected: e.stock == 0
+                                          ? null
+                                          : (_) {
                                               setState(() {
                                                 quantitySelection = index;
                                               });
                                             },
-                                            selected:
-                                                quantitySelection == index,
-                                          ),
-                                        );
-                                      },
-                                      primary: false,
-                                      shrinkWrap: true,
-                                      itemCount: product.price.length,
-                                    ),
-                                  ],
+                                      selected: quantitySelection == index,
+                                    );
+                                  }).toList(),
                                 ),
                               ),
                               const SizedBox(
-                                width: 36,
+                                width: 18,
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    "₹${product.discountedPrices.values.toList()[quantitySelection]}",
+                                    "₹${product.discountedPrices[quantitySelection].price}",
                                     style: Theme.of(context)
                                         .textTheme
                                         .displaySmall
@@ -107,37 +114,39 @@ class _ProductPageState extends State<ProductPage> {
                                           fontWeight: FontWeight.w500,
                                         ),
                                   ),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        "MRP: ₹${product.price.values.toList()[quantitySelection].toInt()}",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.grey,
-                                              decoration:
-                                                  TextDecoration.lineThrough,
+                                  product.price.first.discount <= 0
+                                      ? SizedBox()
+                                      : Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              "MRP: ₹${product.price[quantitySelection].price.toInt()}",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.grey,
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
+                                                  ),
                                             ),
-                                      ),
-                                      const SizedBox(
-                                        width: 4,
-                                      ),
-                                      Text(
-                                        "(${product.discount}% off)",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.w500,
-                                              color: const Color.fromARGB(
-                                                  255, 164, 179, 88),
+                                            const SizedBox(
+                                              width: 4,
                                             ),
-                                      ),
-                                    ],
-                                  ),
+                                            Text(
+                                              "(${((product.price.first.discount * 100) / product.price.first.price).round()}% off)",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.w500,
+                                                    color: const Color.fromARGB(
+                                                        255, 164, 179, 88),
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
                                 ],
                               ),
                             ],
@@ -161,87 +170,41 @@ class _ProductPageState extends State<ProductPage> {
                           const SizedBox(
                             height: 12,
                           ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '01',
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium,
-                              ),
-                              const SizedBox(
-                                width: 12,
-                              ),
-                              Expanded(
-                                child: Text(
-                                  product.description,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '02',
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium,
-                              ),
-                              const SizedBox(
-                                width: 12,
-                              ),
-                              Expanded(
-                                child: Text(
-                                  product.description,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '03',
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium,
-                              ),
-                              const SizedBox(
-                                width: 12,
-                              ),
-                              Expanded(
-                                child: Text(
-                                  product.description,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '04',
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium,
-                              ),
-                              const SizedBox(
-                                width: 12,
-                              ),
-                              Expanded(
-                                child: Text(
-                                  product.description,
-                                ),
-                              ),
-                            ],
-                          ),
+                          Builder(builder: (context) {
+                            final description =
+                                product.description.split("\n\n");
+                            return ListView.separated(
+                                itemBuilder: (context, index) {
+                                  return Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        (index + 1).toString().padLeft(2, "0"),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium,
+                                      ),
+                                      const SizedBox(
+                                        width: 12,
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          description[index],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                                separatorBuilder: (context, index) {
+                                  return const SizedBox(
+                                    height: 12,
+                                  );
+                                },
+                                primary: false,
+                                shrinkWrap: true,
+                                itemCount: description.length);
+                          }),
                         ],
                       ),
                     ),
@@ -256,46 +219,119 @@ class _ProductPageState extends State<ProductPage> {
                 left: 24,
                 right: 24,
                 child: SizedBox(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 36),
-                    ),
-                    onPressed: () {
-                      if (existInCart) {
-                        //TODO MODIFY CART
-                      } else {
-                        final cartItem = CartItem(
-                            productId: productId,
-                            quantity: 1,
-                            size: quantitySelection);
-                        cartProvider.addProductToCart(
-                            cartItem, ScaffoldMessenger.of(context));
-                      }
-                    },
-                    child: Row(
-                      children: [
-                        Text(
-                          (existInCart ? 'Modify Cart' : 'Add to Cart')
-                              .toUpperCase(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: getThemedColor(
-                                      context,
-                                      const Color(0xFF264431),
-                                      Colors.green.shade100)),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            disabledBackgroundColor:
+                                Theme.of(context).colorScheme.error,
+                            disabledForegroundColor:
+                                Theme.of(context).colorScheme.onError,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 36),
+                          ),
+                          onPressed: !existInCart &&
+                                  product.price[quantitySelection].stock == 0
+                              ? null
+                              : () {
+                                  if (existInCart) {
+                                    showModifyCartBottomSheet(
+                                        context,
+                                        product,
+                                        cartProvider.cart
+                                            .where((element) =>
+                                                element.productId == product.id)
+                                            .toList());
+                                  } else {
+                                    final cartItem = CartItem(
+                                        productId: productId,
+                                        quantity: 1,
+                                        size: quantitySelection);
+                                    cartProvider.addProductToCart(cartItem,
+                                        ScaffoldMessenger.of(context));
+                                  }
+                                },
+                          child: Row(
+                            children: [
+                              Text(
+                                (existInCart
+                                    ? 'Modify Cart'
+                                    : (product.price[quantitySelection].stock ==
+                                            0
+                                        ? 'Out of Stock'
+                                        : 'Add to Cart')),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: !existInCart &&
+                                                product.price[quantitySelection]
+                                                        .stock ==
+                                                    0
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .onError
+                                            : getThemedColor(
+                                                context,
+                                                const Color(0xFF264431),
+                                                Colors.green.shade100)),
+                              ),
+                              const Spacer(),
+                              Icon(
+                                FeatherIcons.shoppingBag,
+                                color: !existInCart &&
+                                        product.price[quantitySelection]
+                                                .stock ==
+                                            0
+                                    ? Theme.of(context).colorScheme.onError
+                                    : getThemedColor(
+                                        context,
+                                        const Color(0xFF264431),
+                                        Colors.green.shade100),
+                              ),
+                            ],
+                          ),
                         ),
-                        const Spacer(),
-                        Icon(
-                          FeatherIcons.shoppingBag,
-                          color: getThemedColor(context,
-                              const Color(0xFF264431), Colors.green.shade100),
-                        ),
-                      ],
-                    ),
+                      ),
+                      // SizedBox(
+                      //   width: 12,
+                      // ),
+                      // FilledButton.icon(
+                      //   onPressed: () async {
+                      //     ScaffoldMessenger.of(context).showSnackBar(
+                      //       BheeshmaSnackbar(
+                      //           title: 'Just a moment...',
+                      //           message: 'We are working on it',
+                      //           contentType: ContentType.help),
+                      //     );
+
+                      //     Response imageResponse =
+                      //         await get(Uri.parse(product.image));
+
+                      //     Share.shareXFiles([
+                      //       XFile.fromData(imageResponse.bodyBytes,
+                      //           name: product.image
+                      //               .split("/")
+                      //               .last
+                      //               .split("?")
+                      //               .first,
+                      //           mimeType:
+                      //               'image/${product.image.split("/").last.split("?").first.split(".").last}')
+                      //     ],
+                      //         subject:
+                      //             'Check out fresh ${product.name} on Bheeshma Naturals!',
+                      //         text:
+                      //             'Check out fresh ${product.name} on Bheeshma Naturals!\n${product.description}.\n\nOrder now at https://bheeshmanaturals.com/products/${product.id}');
+                      //   },
+                      //   icon: Icon(
+                      //     FeatherIcons.share,
+                      //     size: 16,
+                      //   ),
+                      //   label: Text("Share"),
+                      // ),
+                    ],
                   ),
                 ),
               )
@@ -340,7 +376,7 @@ class _ProductPageState extends State<ProductPage> {
 //                             crossAxisAlignment: CrossAxisAlignment.start,
 //                             children: [
 //                               Text(
-//                                 product.name.toUpperCase(),
+//                                 product.name,
 //                                 style: Theme.of(context)
 //                                     .textTheme
 //                                     .headlineLarge
@@ -639,7 +675,7 @@ class _ProductPageState extends State<ProductPage> {
 //                   ),
 //                 ),
 //                 Text(
-//                   product.name.toUpperCase(),
+//                   product.name,
 //                   style: Theme.of(context).textTheme.displayMedium?.copyWith(
 //                         fontWeight: FontWeight.bold,
 //                         color: Colors.white,
@@ -662,7 +698,7 @@ class _ProductPageState extends State<ProductPage> {
 //                 child: Row(
 //                   children: [
 //                     Text(
-//                       'Add to Bag'.toUpperCase(),
+//                       'Add to Bag',
 //                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
 //                           fontWeight: FontWeight.bold,
 //                           color: const Color(0xFF264431)),

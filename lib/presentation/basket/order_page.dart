@@ -1,4 +1,6 @@
+import 'package:bheeshmaorganics/data/providers/order_provider.dart';
 import 'package:bheeshmaorganics/presentation/basket/order_status_card.dart';
+import 'package:bheeshmaorganics/presentation/profile/order_details_page.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -7,9 +9,12 @@ class OrderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //ModalRoute.of(context)?.settings.arguments as int
-    final integerOrderStatus = 0;
-    final orderStatus = OrderStatus.values[integerOrderStatus];
+    final orderStatus = (ModalRoute.of(context)?.settings.arguments
+            as Map<String, Object>)['status'] as OrderStatus? ??
+        OrderStatus.pending;
+    final orderId = (ModalRoute.of(context)?.settings.arguments
+            as Map<String, Object>)['id'] as int? ??
+        0;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: const Color(0xFFF4FFF9),
@@ -40,7 +45,13 @@ class OrderPage extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                // Navigator.of(context).pushNamed('/order-details');
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => OrderDetailScreen(
+                      index: orderId,
+                    ),
+                  ),
+                );
               },
               child: OrderStatusCard(
                 status: orderStatus,

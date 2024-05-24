@@ -37,55 +37,60 @@ class _AdvertisingCardState extends State<AdvertisingCard> {
                       itemCount: widget.advertisements.length,
                       itemBuilder: (context, index, _) {
                         final advertisement = widget.advertisements[index];
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              advertisement.title,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              advertisement.subtitle,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              advertisement.description,
-                            ),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            MaterialButton(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                              color: Theme.of(context).colorScheme.background,
-                              elevation: 0,
-                              onPressed: () {
-                                Navigator.of(context).pushNamed(
-                                  advertisement.route,
-                                  arguments: advertisement.arguments,
-                                );
-                              },
-                              child: Text(
-                                advertisement.cta.toUpperCase(),
+                        return SizedBox(
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                advertisement.title,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .labelLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    .headlineSmall
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
-                            ),
-                          ],
+                              Text(
+                                advertisement.subtitle,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                advertisement.description,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              MaterialButton(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                                color: Theme.of(context).colorScheme.background,
+                                elevation: 0,
+                                onPressed: () {
+                                  Navigator.of(context).pushNamed(
+                                    advertisement.route,
+                                    arguments: advertisement.arguments,
+                                  );
+                                },
+                                child: Text(
+                                  advertisement.cta,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
                         );
                       },
                       options: CarouselOptions(
-                          aspectRatio: 1.48,
+                          aspectRatio: 1.46,
                           viewportFraction: 1,
                           autoPlay: true,
                           onPageChanged: (index, _) {

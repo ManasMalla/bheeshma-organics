@@ -18,14 +18,14 @@ class AddressBottomSheet extends StatelessWidget {
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 24,
                   ),
                   Center(
                     child: SvgPicture.asset(
                       "assets/images/hungry.svg",
-                      colorFilter:
-                          ColorFilter.mode(Color(0x60074014), BlendMode.srcIn),
+                      colorFilter: const ColorFilter.mode(
+                          Color(0x60074014), BlendMode.srcIn),
                       width: 170,
                     ),
                   ),
@@ -33,7 +33,7 @@ class AddressBottomSheet extends StatelessWidget {
                     height: 16,
                   ),
                   Text(
-                    "No Addresses".toUpperCase(),
+                    "No Addresses",
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -41,8 +41,7 @@ class AddressBottomSheet extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   Text(
-                    "You don't have any addresses in your account to deliver your fresh food."
-                        .toUpperCase(),
+                    "You don't have any addresses in your account to deliver your fresh food.",
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: Colors.white,
                         ),
@@ -61,7 +60,7 @@ class AddressBottomSheet extends StatelessWidget {
                       ),
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => AddAddressPage()));
+                            builder: (context) => const AddAddressPage()));
                       },
                       child: Text(
                         'ADD ADDRESS',
@@ -92,7 +91,7 @@ class AddressBottomSheet extends StatelessWidget {
                     height: 16,
                   ),
                   Text(
-                    "Addresses".toUpperCase(),
+                    "Addresses",
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -117,7 +116,7 @@ class AddressBottomSheet extends StatelessWidget {
                             },
                           );
                         },
-                        separatorBuilder: (context, _) => Divider(),
+                        separatorBuilder: (context, _) => const Divider(),
                         itemCount: addressProvider.addresses.length),
                   ),
                   const SizedBox(
@@ -133,7 +132,7 @@ class AddressBottomSheet extends StatelessWidget {
                       ),
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => AddAddressPage()));
+                            builder: (context) => const AddAddressPage()));
                       },
                       child: Text(
                         'ADD ADDRESS',

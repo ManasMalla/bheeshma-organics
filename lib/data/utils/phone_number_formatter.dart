@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class PhoneInputFormatter extends TextInputFormatter {
@@ -11,7 +10,7 @@ class PhoneInputFormatter extends TextInputFormatter {
     int selectionIndex = newValue.selection.end;
 
     // Insert spaces after the first 3 digits and the next 4 digits
-    final formattedText = new StringBuffer();
+    final formattedText = StringBuffer();
     for (int i = 0; i < newTextLength; i++) {
       formattedText.write(newText[i]);
       if (i == 4) {

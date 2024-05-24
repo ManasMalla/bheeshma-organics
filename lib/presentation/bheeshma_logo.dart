@@ -13,7 +13,7 @@ class BheeshmaOrganicsLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SvgPicture.asset(
-      'assets/icons/logo.svg',
+      'assets/images/bheeshma-naturals.svg',
       height: height,
       color: color,
     );

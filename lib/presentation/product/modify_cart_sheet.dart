@@ -28,9 +28,10 @@ class _ModifyCartBottomSheetState extends State<ModifyCartBottomSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Modify Cart'.toUpperCase(),
+              'Modify Cart',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
             ),
             const SizedBox(
@@ -57,81 +58,87 @@ class _ModifyCartBottomSheetState extends State<ModifyCartBottomSheet> {
               shrinkWrap: true,
               primary: false,
             ),
+            // const SizedBox(
+            //   height: 24,
+            // ),
+            // cart.length == widget.product.price.length
+            //     ? const SizedBox()
+            //     : Column(
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           Text(
+            //             'You might want to add',
+            //             style: Theme.of(context)
+            //                 .textTheme
+            //                 .headlineSmall
+            //                 ?.copyWith(
+            //                     fontWeight: FontWeight.bold,
+            //                     color: Colors.white),
+            //           ),
+            //           const SizedBox(
+            //             height: 24,
+            //           ),
+            //           ListView.separated(
+            //             padding: EdgeInsets.zero,
+            //             itemBuilder: (context, index) {
+            //               final sizesList = List.generate(
+            //                   widget.product.price.length, (index) => index);
+            //               for (var item in cart) {
+            //                 sizesList.remove(item.size);
+            //               }
+            //               return BasketItem(
+            //                 widget.product,
+            //                 quantity: 0,
+            //                 quantityChoice: sizesList[index],
+            //                 modifyItemCount: (delta) {
+            //                   cartProvider.addProductToCart(
+            //                     CartItem(
+            //                         productId: widget.product.id,
+            //                         quantity: delta,
+            //                         size: sizesList[index]),
+            //                     ScaffoldMessenger.of(context),
+            //                   );
+            //                   setState(() {});
+            //                 },
+            //               );
+            //             },
+            //             separatorBuilder: (context, _) => const SizedBox(
+            //               height: 12,
+            //             ),
+            //             itemCount: widget.product.price.length - cart.length,
+            //             shrinkWrap: true,
+            //             primary: false,
+            //           )
+            //         ],
+            //       ),
             const SizedBox(
-              height: 24,
-            ),
-            cart.length == widget.product.price.length
-                ? SizedBox()
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'You might want to add',
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      ListView.separated(
-                        padding: EdgeInsets.zero,
-                        itemBuilder: (context, index) {
-                          final sizesList = List.generate(
-                              widget.product.price.length, (index) => index);
-                          for (var item in cart) {
-                            sizesList.remove(item.size);
-                          }
-                          return BasketItem(
-                            widget.product,
-                            quantity: 0,
-                            quantityChoice: sizesList[index],
-                            modifyItemCount: (delta) {
-                              cartProvider.addProductToCart(
-                                CartItem(
-                                    productId: widget.product.id,
-                                    quantity: delta,
-                                    size: sizesList[index]),
-                                ScaffoldMessenger.of(context),
-                              );
-                              setState(() {});
-                            },
-                          );
-                        },
-                        separatorBuilder: (context, _) => const SizedBox(
-                          height: 12,
-                        ),
-                        itemCount: widget.product.price.length - cart.length,
-                        shrinkWrap: true,
-                        primary: false,
-                      )
-                    ],
-                  ),
-            SizedBox(
               height: 24,
             ),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFF699E81),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
+                    const Icon(
                       FeatherIcons.edit,
                       size: 16,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 12,
                     ),
                     Text(
-                      'Modify'.toUpperCase(),
+                      'Modify',
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary,
                             fontWeight: FontWeight.bold,
+                            color: const Color(0xFF699E81),
                           ),
                     ),
                   ],
@@ -149,6 +156,7 @@ void showModifyCartBottomSheet(
     BuildContext context, Product product, List<CartItem> cart) {
   showModalBottomSheet(
       context: context,
+      backgroundColor: const Color(0xFF699E81),
       builder: (context) {
         return ModifyCartBottomSheet(product);
       });

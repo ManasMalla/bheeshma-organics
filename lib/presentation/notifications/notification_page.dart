@@ -1,8 +1,9 @@
 import 'package:bheeshmaorganics/data/entitites/notification.dart';
-import 'package:bheeshmaorganics/data/utils/custom_ticket_shape.dart';
+import 'package:bheeshmaorganics/data/providers/notification_provider.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});
@@ -10,63 +11,67 @@ class NotificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(children: [
-          Row(
-            children: [
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
+      body: Consumer<NotificationProvider>(
+          builder: (context, notificationProvider, _) {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(FeatherIcons.arrowLeft),
+                  ),
+                  const Spacer(),
+                  SvgPicture.asset(
+                    'assets/images/character-two.svg',
+                    width: 140,
+                    colorFilter: Theme.of(context).brightness == Brightness.dark
+                        ? const ColorFilter.mode(
+                            Colors.white54, BlendMode.srcIn)
+                        : null,
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 48,
+              ),
+              Text(
+                "Missed something?",
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              Text(
+                "Catch all the updates you might have missed out",
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(
+                height: 36,
+              ),
+              ListView.separated(
+                itemBuilder: (context, index) {
+                  return NotificationCard(
+                      notificationProvider.notification[index]);
                 },
-                icon: const Icon(FeatherIcons.arrowLeft),
-              ),
-              const Spacer(),
-              SvgPicture.asset(
-                'assets/images/character-two.svg',
-                width: 140,
-                colorFilter: Theme.of(context).brightness == Brightness.dark
-                    ? const ColorFilter.mode(Colors.white54, BlendMode.srcIn)
-                    : null,
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 48,
-          ),
-          Text(
-            "Missed something?",
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                separatorBuilder: (_, __) => const SizedBox(
+                  height: 16,
                 ),
+                itemCount: notificationProvider.notification.length,
+                primary: false,
+                shrinkWrap: true,
+              ),
+            ]),
           ),
-          const SizedBox(
-            height: 12,
-          ),
-          Text(
-            "Catch all the updates you might have missed out",
-            style: Theme.of(context).textTheme.titleMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(
-            height: 36,
-          ),
-          const NotificationCard(
-            BheeshmaNotification(
-                title: 'Happy Sankranthi',
-                body:
-                    'This sankranthi have a feast with your family with Bheeshma Naturals fresh organic rice! We have added a new product to our store. Check it out now!',
-                image:
-                    'https://t4.ftcdn.net/jpg/04/03/98/77/360_F_403987784_eMB97Bj3m7peE5Hh2uKI2NFXj5Gwi9zC.jpg',
-                type: 'discover',
-                id: 'sankranthi',
-                cta: 'Shop now',
-                payload: '',
-                route: '/home',
-                updatedAt: '2024-01-12'),
-          ),
-        ]),
-      ),
+        );
+      }),
     );
   }
 }

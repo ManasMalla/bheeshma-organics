@@ -20,7 +20,7 @@ class MyOrdersPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Your Orders'.toUpperCase(),
+                  'Your Orders',
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -55,8 +55,7 @@ class MyOrdersPage extends StatelessWidget {
                               Row(
                                 children: [
                                   Text(
-                                    "Order #${orderProvider.orders[orderIndex].id}"
-                                        .toUpperCase(),
+                                    "Order #${orderProvider.orders[orderIndex].id + 1}",
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineMedium
@@ -72,9 +71,16 @@ class MyOrdersPage extends StatelessWidget {
                                             BorderRadius.circular(16)),
                                     child: Text(
                                       orderProvider.orders[orderIndex].status
-                                              .contains(0)
-                                          ? "In Progress".toUpperCase()
-                                          : "Delivered".toUpperCase(),
+                                              .where((element) => element == 7)
+                                              .isNotEmpty
+                                          ? 'Cancelled'
+                                          : orderProvider
+                                                  .orders[orderIndex].status
+                                                  .where(
+                                                      (element) => element != 3)
+                                                  .isNotEmpty
+                                              ? "In Progress"
+                                              : "Delivered",
                                       style: Theme.of(context)
                                           .textTheme
                                           .labelLarge
@@ -84,10 +90,8 @@ class MyOrdersPage extends StatelessWidget {
                                 ],
                               ),
                               Text(
-                                DateFormat("EEE, MMM dd")
-                                    .format(
-                                        orderProvider.orders[orderIndex].date)
-                                    .toUpperCase(),
+                                DateFormat("EEE, MMM dd").format(
+                                    orderProvider.orders[orderIndex].date),
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleMedium

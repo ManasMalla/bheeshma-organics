@@ -2,17 +2,17 @@ import 'package:bheeshmaorganics/data/entitites/category.dart';
 import 'package:bheeshmaorganics/data/utils/discount_type.dart';
 
 class Product {
+  final String docId;
   final int id;
   final String name;
-  final Map<String, double> price;
+  final List<QuantityInfo> price;
   final String cover;
   final Category category;
   final Subcategory? subcategory;
   final String image;
   final String description;
-  final int discount;
-  final DiscountType discountType;
   const Product({
+    required this.docId,
     required this.id,
     required this.name,
     required this.price,
@@ -21,15 +21,52 @@ class Product {
     required this.category,
     this.subcategory,
     required this.description,
-    required this.discount,
-    required this.discountType,
   });
 
-  Map<String, double> get discountedPrices {
-    return price.map((key, e) => MapEntry(
-        key,
-        discountType == DiscountType.percentage
-            ? e - ((e * discount) / 100).ceil()
-            : e - discount));
+  List<QuantityInfo> get discountedPrices {
+    return price
+        .map((product) => QuantityInfo(
+              quantity: product.quantity,
+              price: product.price - product.discount,
+              stock: product.stock,
+              discount: product.discount,
+            ))
+        .toList();
+  }
+
+  Product copyWith({required List<QuantityInfo> price}) {
+    return Product(
+      docId: docId,
+      id: id,
+      name: name,
+      price: price,
+      image: image,
+      cover: cover,
+      category: category,
+      subcategory: subcategory,
+      description: description,
+    );
+  }
+}
+
+class QuantityInfo {
+  final String quantity;
+  final double price;
+  final int stock;
+  final int discount;
+  const QuantityInfo({
+    required this.quantity,
+    required this.price,
+    required this.stock,
+    required this.discount,
+  });
+
+  QuantityInfo copyWith({required int stock}) {
+    return QuantityInfo(
+      quantity: quantity,
+      price: price,
+      stock: stock,
+      discount: discount,
+    );
   }
 }

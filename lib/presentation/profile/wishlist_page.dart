@@ -54,7 +54,7 @@ class WishlistPage extends StatelessWidget {
                             height: 48,
                           ),
                           Text(
-                            "Oops!".toUpperCase(),
+                            "Oops!",
                             style: Theme.of(context)
                                 .textTheme
                                 .headlineLarge
@@ -67,8 +67,7 @@ class WishlistPage extends StatelessWidget {
                             height: 12,
                           ),
                           Text(
-                            "You don't have any items in your wishlist.\nStart by adding items to your wishlist."
-                                .toUpperCase(),
+                            "You don't have any items in your wishlist.\nStart by adding items to your wishlist.",
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium

@@ -1,4 +1,3 @@
-import 'package:bheeshmaorganics/data/entitites/product.dart';
 import 'package:bheeshmaorganics/data/utils/get_themed_color.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
@@ -25,25 +24,27 @@ class OrderItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              productName.toUpperCase(),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-            ),
-            Opacity(
-              opacity: 0.54,
-              child: Text('$quantityChoice Pack'.toUpperCase(),
-                  style: Theme.of(context).textTheme.bodySmall),
-            ),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                productName,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+              ),
+              Opacity(
+                opacity: 0.54,
+                child: Text('$quantityChoice Pack',
+                    style: Theme.of(context).textTheme.bodySmall),
+              ),
+            ],
+          ),
         ),
-        const Spacer(),
         quantity == 0
             ? const SizedBox()
             : Container(
@@ -77,10 +78,10 @@ class OrderItemCard extends StatelessWidget {
                               color: Colors.white,
                             ),
                           )
-                        : const Icon(
+                        : Icon(
                             Icons.close,
                             size: 12,
-                            color: Colors.white,
+                            color: isOrderHistory ? null : Colors.white,
                           ),
                     SizedBox(
                       width: isReview ? 5 : 12,
@@ -88,9 +89,10 @@ class OrderItemCard extends StatelessWidget {
                     Text(
                       quantity.toString(),
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                          fontSize: 20),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 20,
+                            color: isOrderHistory ? null : Colors.white,
+                          ),
                     ),
                     const SizedBox(
                       width: 12,
@@ -116,7 +118,7 @@ class OrderItemCard extends StatelessWidget {
                 width: 12,
               ),
         isOrderHistory
-            ? SizedBox()
+            ? const SizedBox()
             : Container(
                 decoration: BoxDecoration(
                   color: getThemedColor(

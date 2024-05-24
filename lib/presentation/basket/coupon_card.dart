@@ -41,7 +41,7 @@ class CouponCard extends StatelessWidget {
             ),
             FilledButton(
               style: FilledButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 visualDensity: VisualDensity.compact,
                 backgroundColor: Colors.white,
                 foregroundColor: const Color(0xFF487D60),
@@ -49,7 +49,7 @@ class CouponCard extends StatelessWidget {
               onPressed: () {
                 applyCoupon();
               },
-              child: Text('APPLY'),
+              child: const Text('APPLY'),
             ),
           ],
         ),

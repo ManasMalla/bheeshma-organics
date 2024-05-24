@@ -1,10 +1,14 @@
 import 'dart:math';
 
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:bheeshmaorganics/data/utils/get_themed_color.dart';
 import 'package:bheeshmaorganics/presentation/address/address_bottom_sheet.dart';
+import 'package:bheeshmaorganics/presentation/bheeshma_snackbar.dart';
+import 'package:bheeshmaorganics/presentation/onboarding/login_page.dart';
 import 'package:bheeshmaorganics/presentation/profile/sign_out_bottom_sheet.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,35 +32,46 @@ class ProfilePage extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
-                padding: const EdgeInsets.all(24.0),
-                color: getThemedColor(context, const Color(0xFFD4E28D),
-                    const Color.fromARGB(255, 41, 43, 35)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "My Profile",
-                      style:
-                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24.0),
+                    color: getThemedColor(context, const Color(0xFFD4E28D),
+                        const Color.fromARGB(255, 41, 43, 35)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "My Profile",
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        const Text(
+                            "Your one stop repository to explore your daily dose of nature and everything you.."),
+                        const SizedBox(
+                          height: 120,
+                        ),
+                      ],
                     ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    const Text(
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque ipsum libero,"),
-                    const SizedBox(
-                      height: 100,
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    height: 88,
+                  ),
+                ],
               ),
               Positioned(
                 right: 24,
                 left: 24,
-                bottom: -108,
+                bottom: 0,
                 child: Container(
                   height: 210,
                   decoration: BoxDecoration(
@@ -115,7 +130,7 @@ class ProfilePage extends StatelessWidget {
                                             fontWeight: FontWeight.w500),
                                   ),
                                   Text(
-                                    'student • designer• developer• life\'s too short and beautiful',
+                                    'Member since ${user?.metadata.creationTime?.year}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall
@@ -126,44 +141,52 @@ class ProfilePage extends StatelessWidget {
                                   const SizedBox(
                                     height: 8,
                                   ),
-                                  // MaterialButton(
-                                  //   padding: const EdgeInsets.symmetric(
-                                  //       horizontal: 16, vertical: 12),
-                                  //   color: Colors.white,
-                                  //   shape: RoundedRectangleBorder(
-                                  //     borderRadius: BorderRadius.circular(10),
-                                  //   ),
-                                  //   elevation: 0,
-                                  //   onPressed: () {
-                                  //     showModalBottomSheet(
-                                  //         context: context,
-                                  //         builder: (context) {
-                                  //           return const Row(
-                                  //             children: [
-                                  //               Expanded(
-                                  //                 child: Column(
-                                  //                   children: [
-                                  //                     TextField(),
-                                  //                     TextField(),
-                                  //                     TextField(),
-                                  //                   ],
-                                  //                 ),
-                                  //               ),
-                                  //             ],
-                                  //           );
-                                  //         });
-                                  //   },
-                                  //   child: Text(
-                                  //     'Edit Profile'.toUpperCase(),
-                                  //     style: Theme.of(context)
-                                  //         .textTheme
-                                  //         .labelMedium
-                                  //         ?.copyWith(
-                                  //           fontWeight: FontWeight.bold,
-                                  //           color: Colors.black,
-                                  //         ),
-                                  //   ),
-                                  // ),
+                                  Builder(builder: (context) {
+                                    String str = FirebaseAuth
+                                            .instance.currentUser?.uid ??
+                                        "";
+                                    List<String> list = [];
+                                    for (int i = 0; i < str.length; i++) {
+                                      if (i % 4 == 0 && i != 0) {
+                                        list.add(" ");
+                                      }
+                                      list.add(str[i]);
+                                    }
+                                    return Text(
+                                      list.take(19).join(' '),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                              color:
+                                                  Colors.white.withOpacity(0.6),
+                                              letterSpacing: 0.1),
+                                    );
+                                  }),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  MaterialButton(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 12),
+                                    color: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    onPressed: () {
+                                      showEditProfileBottomSheet(context);
+                                    },
+                                    child: Text(
+                                      'Edit Profile',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -171,10 +194,10 @@ class ProfilePage extends StatelessWidget {
                               width: 24,
                             ),
                             ClipOval(
-                              child: Image.network(
-                                'https://github.com/ManasMalla.png',
-                                height: 140,
-                                width: 140,
+                              child: Image.asset(
+                                'assets/images/user-profile.png',
+                                height: 130,
+                                width: 130,
                               ),
                             )
                           ],
@@ -192,7 +215,7 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(
-                  height: 120,
+                  height: 24,
                 ),
                 ListTile(
                   onTap: () {
@@ -218,7 +241,7 @@ class ProfilePage extends StatelessWidget {
                   leading: const Icon(
                     FeatherIcons.mapPin,
                   ),
-                  title: const Text('Adressess'),
+                  title: const Text('Addressess'),
                   onTap: () {
                     showModalBottomSheet(
                         backgroundColor: const Color(0xFF699E81),
@@ -266,7 +289,7 @@ class ProfilePage extends StatelessWidget {
                       ListTile(
                         onTap: () {
                           launchUrlString(
-                              'https://bheeshmanaturals.manasmalla.dev/terms-and-conditions.html');
+                              'https://bheeshmanaturals.manasmalla.dev/terms-conditions.html');
                         },
                         contentPadding: const EdgeInsets.only(left: 48),
                         title: const Text('Terms and Conditions'),
@@ -301,7 +324,7 @@ class ProfilePage extends StatelessWidget {
                       ],
                       subject: 'Checkout this awesome app!',
                       text:
-                          'Checkout this awesome app to order natural products! Bheeshma Naturals provides you with the best quality products at the best price. Install now! Head over to the app store now.',
+                          'Checkout this awesome app to order natural products! Bheeshma Naturals provides you with the best quality products at the best price. Install now! Head over to the app store now: https://play.google.com/store/apps/details?id=com.manasmalla.bheeshmaorganics&hl=en_US',
                     );
                   },
                   title: const Text('Share App'),
@@ -328,5 +351,147 @@ class ProfilePage extends StatelessWidget {
         ]),
       ),
     );
+  }
+
+  Future<dynamic> showEditProfileBottomSheet(BuildContext context) {
+    var nameEditingController = TextEditingController(
+        text: FirebaseAuth.instance.currentUser?.displayName);
+    var emailEditingController =
+        TextEditingController(text: FirebaseAuth.instance.currentUser?.email);
+    var phoneEditingController = TextEditingController(
+        text: FirebaseAuth.instance.currentUser?.phoneNumber);
+    var otpEditingController = TextEditingController();
+
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Edit Profile',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  'Your one stop shop for all updating your\ndetails so that you never miss out the goodness',
+                  style: Theme.of(context).textTheme.titleMedium,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 24,
+                ),
+                //Name
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Name',
+                    isDense: true,
+                    filled: true,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none),
+                  ),
+                  controller: nameEditingController,
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                //Phone
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Phone',
+                    isDense: true,
+                    filled: true,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none),
+                  ),
+                  controller: phoneEditingController,
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                //Email
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Email',
+                    isDense: true,
+                    filled: true,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none),
+                  ),
+                  controller: emailEditingController,
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () async {
+                      if (nameEditingController.text.isNotEmpty &&
+                          nameEditingController.text !=
+                              FirebaseAuth.instance.currentUser?.displayName) {
+                        FirebaseAuth.instance.currentUser
+                            ?.updateDisplayName(nameEditingController.text);
+                      }
+                      if (emailEditingController.text.isNotEmpty &&
+                          emailEditingController.text !=
+                              FirebaseAuth.instance.currentUser?.email) {
+                        FirebaseAuth.instance.currentUser
+                            ?.updateEmail(emailEditingController.text);
+                      }
+                      if (phoneEditingController.text.isNotEmpty &&
+                          phoneEditingController.text !=
+                              FirebaseAuth.instance.currentUser?.phoneNumber) {
+                        await FirebaseAuth.instance.verifyPhoneNumber(
+                            phoneNumber: phoneEditingController.text,
+                            verificationCompleted: (credential) {
+                              FirebaseAuth.instance.currentUser
+                                  ?.updatePhoneNumber(credential);
+                            },
+                            verificationFailed: (failure) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                BheeshmaSnackbar(
+                                    title: 'Unable to link phone number',
+                                    message:
+                                        'An unknown error occured when updating your phone number. ${failure.message}',
+                                    contentType: ContentType.failure),
+                              );
+                            },
+                            codeSent: (verificationId, [forceResendingToken]) {
+                              OTPBottomSheet(
+                                  phoneEditingController:
+                                      phoneEditingController,
+                                  verificationId: verificationId,
+                                  otpEditingController: otpEditingController);
+                            },
+                            codeAutoRetrievalTimeout: (_) {});
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        BheeshmaSnackbar(
+                          title: 'Profile updated successfully',
+                          message:
+                              'Please close and open your app to reflect the updated changes.',
+                          contentType: ContentType.help,
+                        ),
+                      );
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Update'),
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
   }
 }

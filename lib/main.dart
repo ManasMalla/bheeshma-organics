@@ -1,8 +1,14 @@
+import 'dart:io';
+
+import 'package:app_links/app_links.dart';
+import 'package:bheeshmaorganics/data/entitites/order.dart';
 import 'package:bheeshmaorganics/data/providers/address_provider.dart';
+import 'package:bheeshmaorganics/data/providers/advertisement_provider.dart';
 import 'package:bheeshmaorganics/data/providers/cart_provider.dart';
 import 'package:bheeshmaorganics/data/providers/category_provider.dart';
 import 'package:bheeshmaorganics/data/providers/coupon_provider.dart';
 import 'package:bheeshmaorganics/data/providers/liked_provider.dart';
+import 'package:bheeshmaorganics/data/providers/notification_provider.dart';
 import 'package:bheeshmaorganics/data/providers/order_provider.dart';
 import 'package:bheeshmaorganics/data/providers/product_provider.dart';
 import 'package:bheeshmaorganics/data/utils/get_themed_color.dart';
@@ -22,19 +28,77 @@ import 'package:bheeshmaorganics/presentation/profile/my_orders_page.dart';
 import 'package:bheeshmaorganics/presentation/profile/profile_page.dart';
 import 'package:bheeshmaorganics/presentation/profile/wishlist_page.dart';
 import 'package:feather_icons/feather_icons.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+// FlutterFire's Firebase Cloud Messaging plugin
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:rxdart/rxdart.dart';
+
+final _messageStreamController = BehaviorSubject<RemoteMessage>();
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  if (kDebugMode) {
+    print("Handling a background message: ${message.messageId}");
+    print('Message data: ${message.data}');
+    print('Message notification: ${message.notification?.title}');
+    print('Message notification: ${message.notification?.body}');
+  }
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  if (Platform.isAndroid) {
+    final messaging = FirebaseMessaging.instance;
+
+    final settings = await messaging.requestPermission(
+      alert: true,
+      announcement: true,
+      badge: true,
+      carPlay: false,
+      criticalAlert: true,
+      provisional: true,
+      sound: true,
+    );
+
+    if (kDebugMode) {
+      print('Permission granted: ${settings.authorizationStatus}');
+    }
+
+    // It requests a registration token for sending messages to users from your App server or other trusted server environment.
+    String? token = await messaging.getToken();
+
+    if (kDebugMode) {
+      print('Registration Token=$token');
+    }
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (kDebugMode) {
+        print('Handling a foreground message: ${message.messageId}');
+        print('Message data: ${message.data}');
+        print('Message notification: ${message.notification?.title}');
+        print('Message notification: ${message.notification?.body}');
+      }
+
+      _messageStreamController.sink.add(message);
+    });
+
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
+
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (context) => CategoryProvider(),
+        ),
         ChangeNotifierProvider(
           create: (context) => CartProvider(),
         ),
@@ -54,7 +118,10 @@ Future<void> main() async {
           create: (context) => ProductProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => CategoryProvider(),
+          create: (context) => NotificationProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AdvertisementProvider(),
         ),
       ],
       child: const MyApp(),
@@ -68,7 +135,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bheeshma Organics',
+      title: 'Bheeshma Naturals',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF006738)),
         useMaterial3: true,
@@ -113,6 +180,25 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    Provider.of<OrderProvider>(context, listen: false).checkIfPaymentsPending(
+        Provider.of<CartProvider>(context, listen: false),
+        Provider.of<ProductProvider>(context, listen: false).products,
+        context,
+        Provider.of<ProductProvider>(context, listen: false),
+        Provider.of<AddressProvider>(context, listen: false)
+            .addresses
+            .firstOrNull);
+    _messageStreamController.listen((message) {
+      setState(() {
+        if (message.notification != null) {
+          print(message.notification?.title);
+        } else {
+          print(message.data);
+          // _lastMessage = 'Received a data message: ${message.data}';
+        }
+      });
+    });
+
     searchController.addListener(() {
       setState(() {});
     });
@@ -123,10 +209,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       bottomNavigationBar: NavigationBar(
         selectedIndex: pageIndex,
-        backgroundColor: getThemedColor(
-            context, const Color(0xFFEAEFD1), Color.fromARGB(255, 32, 32, 30)),
-        indicatorColor: getThemedColor(
-            context, const Color(0xFFD4E28D), Color.fromARGB(255, 50, 52, 42)),
+        backgroundColor: getThemedColor(context, const Color(0xFFEAEFD1),
+            const Color.fromARGB(255, 32, 32, 30)),
+        indicatorColor: getThemedColor(context, const Color(0xFFD4E28D),
+            const Color.fromARGB(255, 50, 52, 42)),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_rounded),
@@ -144,6 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onDestinationSelected: (page) {
           if (page == 2) {
             showModalBottomSheet(
+                isScrollControlled: true,
                 backgroundColor: const Color(0xFF699E81),
                 context: context,
                 builder: (context) {
@@ -153,6 +240,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
           setState(() {
             pageIndex = page;
+            searchController.clear();
           });
         },
       ),
@@ -176,16 +264,18 @@ class _MyHomePageState extends State<MyHomePage> {
       body: searchController.text.isNotEmpty
           ? Consumer<ProductProvider>(builder: (context, productProvider, _) {
               return Scaffold(
-                body: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    children: [
-                      productProvider.products
-                              .where((element) =>
-                                  element.name.contains(searchController.text))
-                              .isEmpty
-                          ? Expanded(
-                              child: Column(
+                body: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      children: [
+                        productProvider.products
+                                .where((element) => element.name
+                                    .toLowerCase()
+                                    .contains(
+                                        searchController.text.toLowerCase()))
+                                .isEmpty
+                            ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SvgPicture.asset(
@@ -198,7 +288,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         BlendMode.srcIn),
                                     width: 170,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 24,
                                   ),
                                   Text(
@@ -208,39 +298,46 @@ class _MyHomePageState extends State<MyHomePage> {
                                     textAlign: TextAlign.center,
                                   ),
                                 ],
+                              )
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    FeatherIcons.search,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(
+                                    width: 12,
+                                  ),
+                                  Text(
+                                    'Search results for "${searchController.text}"',
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                ],
                               ),
-                            )
-                          : Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  FeatherIcons.search,
-                                  size: 16,
-                                ),
-                                SizedBox(
-                                  width: 12,
-                                ),
-                                Text(
-                                  'Search results for "${searchController.text}"',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
-                              ],
-                            ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      ProductGridList(productProvider.products
-                          .where((element) =>
-                              element.name.contains(searchController.text))
-                          .toList()),
-                    ],
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        ProductGridList(productProvider.products
+                            .where((element) => element.name
+                                .toLowerCase()
+                                .contains(searchController.text.toLowerCase()))
+                            .toList()),
+                      ],
+                    ),
                   ),
                 ),
               );
             })
           : pageIndex == 0
-              ? const HomePage()
+              ? HomePage(
+                  onShowExplorePage: () {
+                    setState(() {
+                      pageIndex = 1;
+                    });
+                  },
+                )
               : const ExplorePage(),
     );
   }
@@ -249,24 +346,45 @@ class _MyHomePageState extends State<MyHomePage> {
 PreferredSizeWidget homeScreenAppBar(BuildContext context, searchContorller) {
   return AppBar(
     toolbarHeight: 72,
-    backgroundColor: getThemedColor(context, const Color(0xFFD4E28D),
-        const Color.fromARGB(255, 41, 43, 35)),
-    title: SizedBox(
-      height: 48,
-      child: TextField(
-        controller: searchContorller,
-        decoration: InputDecoration(
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-          isDense: true,
-          filled: true,
-          hintText: 'Search',
-          fillColor: const Color(0x50787F54),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide.none),
+    // backgroundColor: Theme,
+    surfaceTintColor: Colors.transparent,
+    elevation: 0,
+    // backgroundColor: getThemedColor(context, const Color(0xFFD4E28D),
+    //     const Color.fromARGB(255, 41, 43, 35)),
+    title: Row(
+      children: [
+        SizedBox(
+          width: 8,
         ),
-      ),
+        BheeshmaOrganicsLogo(
+          height: 36,
+          color: Color(0xFF787F54),
+        ),
+        SizedBox(
+          width: 24,
+        ),
+        Expanded(
+          child: SizedBox(
+            height: 48,
+            child: TextField(
+              controller: searchContorller,
+              decoration: InputDecoration(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                isDense: true,
+                filled: true,
+                hintText: 'Search',
+                fillColor: getThemedColor(context, const Color(0xFFD4E28D),
+                        const Color.fromARGB(255, 41, 43, 35))
+                    .withOpacity(0.5),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none),
+              ),
+            ),
+          ),
+        ),
+      ],
     ),
     actions: [
       IconButton(
@@ -282,10 +400,6 @@ PreferredSizeWidget homeScreenAppBar(BuildContext context, searchContorller) {
         icon: const Icon(FeatherIcons.user),
       ),
     ],
-    leading: const Center(
-      child: BheeshmaOrganicsLogo(
-        height: 36,
-      ),
-    ),
+    automaticallyImplyLeading: false,
   );
 }
