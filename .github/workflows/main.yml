@@ -42,7 +42,7 @@ jobs:
       - name: Flutter get
         uses: subosito/flutter-action@v2
         with:
-          flutter-version-file: pubspec.yaml # path to pubspec.yaml
+          channel: master # or: beta, master (or main)
 
       # Install your project's dependencies
       - run: flutter pub get
