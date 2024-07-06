@@ -4,20 +4,23 @@
 <dict>
 	<key>destination</key>
 	<string>export</string>
-	<key>generateAppStoreInformation</key>
-	<false/>
 	<key>manageAppVersionAndBuildNumber</key>
 	<true/>
 	<key>method</key>
 	<string>app-store-connect</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.manasmalla.bheeshmaorganics</key>
+		<string>bheeshma-distribution-pp</string>
+	</dict>
+	<key>signingCertificate</key>
+	<string>Apple Distribution</string>
 	<key>signingStyle</key>
-	<string>automatic</string>
+	<string>manual</string>
 	<key>stripSwiftSymbols</key>
 	<true/>
 	<key>teamID</key>
 	<string>CQ9C5FN6L3</string>
-	<key>testFlightInternalTestingOnly</key>
-	<false/>
 	<key>uploadSymbols</key>
 	<true/>
 </dict>
