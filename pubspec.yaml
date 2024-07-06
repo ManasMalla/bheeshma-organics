@@ -41,7 +41,6 @@ dependencies:
   firebase_core: ^3.1.0
   firebase_auth: ^5.0.1
   pinput: ^3.0.1
-  carousel_slider: ^4.2.1
   provider: ^6.1.1
   awesome_snackbar_content:
     git: https://github.com/ManasMalla/awesome_snackbar_content.git
@@ -57,6 +56,7 @@ dependencies:
   rxdart: ^0.27.7
   collection: ^1.18.0
   app_links: ^3.5.0
+  carousel_slider_plus: ^6.0.0
 
 dev_dependencies:
   flutter_test:

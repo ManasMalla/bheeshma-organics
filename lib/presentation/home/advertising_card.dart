@@ -1,6 +1,6 @@
 import 'package:bheeshmaorganics/data/entitites/advertisements.dart';
 import 'package:bheeshmaorganics/data/utils/get_themed_color.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

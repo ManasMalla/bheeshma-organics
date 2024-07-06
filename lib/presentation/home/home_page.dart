@@ -7,7 +7,7 @@ import 'package:bheeshmaorganics/data/providers/product_provider.dart';
 import 'package:bheeshmaorganics/data/utils/get_themed_color.dart';
 import 'package:bheeshmaorganics/presentation/home/advertising_card.dart';
 import 'package:bheeshmaorganics/presentation/product/product_list_grid.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
