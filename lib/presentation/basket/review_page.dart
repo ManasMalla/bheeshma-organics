@@ -510,173 +510,132 @@ class _ReviewPageState extends State<ReviewPage> {
                                 setState(() {
                                   paymentInProgress = true;
                                 });
-                                RazorPayIntegration razorPayIntegration =
-                                    RazorPayIntegration(
-                                        onSuccess: (result) async {
-                                  var basicAuth = base64Encode(utf8.encode(
-                                      '${RazorpaySecret.keyId}:${RazorpaySecret.keySecret}'));
-                                  final paymentDetailsResponse = await get(
-                                    Uri.parse(
-                                      'https://api.razorpay.com/v1/payments/${result.paymentId}/?expand[]=card',
-                                    ),
-                                    headers: {
-                                      'Authorization': 'Basic $basicAuth'
-                                    },
-                                  );
-                                  final paymentDetails =
-                                      json.decode(paymentDetailsResponse.body);
-                                  print(paymentDetails);
-                                  orderProvider.addOrder(
-                                    cartProvider.cart.map((e) {
-                                      final product = products
-                                          .where((element) =>
-                                              element.id == e.productId)
-                                          .first;
-                                      return OrderItem(
-                                        productId: e.productId,
-                                        productName: product.name,
-                                        size: product.price[e.size].quantity,
-                                        quantity: e.quantity,
-                                        price: product
-                                            .discountedPrices[e.size].price,
-                                      );
-                                    }).toList(),
-                                    coupon,
-                                    paymentDetails['method'] == 'card'
-                                        ? CardPaymentMethod(
-                                            name: paymentDetails['card']
-                                                ['name'],
-                                            last4: paymentDetails['card']
-                                                ['last4'],
-                                            cardIssuer: paymentDetails['card']
-                                                ['issuer'],
-                                            cardNetwork: paymentDetails['card']
-                                                ['network'],
-                                            cardType: paymentDetails['card']
-                                                ['type'])
-                                        : paymentDetails['method'] == 'upi'
-                                            ? UPIPaymentMethod(
-                                                name: FirebaseAuth
-                                                        .instance
-                                                        .currentUser
-                                                        ?.displayName ??
-                                                    '',
-                                                vpa: paymentDetails['vpa'])
-                                            : paymentDetails['method'] ==
-                                                    'netbanking'
-                                                ? WalletPaymentMethod(
-                                                    name: FirebaseAuth
-                                                            .instance
-                                                            .currentUser
-                                                            ?.displayName ??
-                                                        '',
-                                                    walletType:
-                                                        paymentDetails['bank'])
-                                                : paymentDetails['method'] ==
-                                                        'emi'
-                                                    ? WalletPaymentMethod(
-                                                        name: FirebaseAuth
-                                                                .instance
-                                                                .currentUser
-                                                                ?.displayName ??
-                                                            '',
-                                                        walletType:
-                                                            paymentDetails['emi']
-                                                                ['issuer'])
-                                                    : paymentDetails['method'] ==
-                                                            'wallet'
-                                                        ? WalletPaymentMethod(name: FirebaseAuth.instance.currentUser?.displayName ?? '', walletType: paymentDetails['wallet'])
-                                                        : const CashOnDeliveryPaymentMethod(),
-                                    address!,
-                                    cartProvider,
-                                    productProvider,
-                                    result.orderId ?? '',
-                                    onOrderPlaced: (id) {
-                                      Navigator.of(context)
-                                          .pushNamedAndRemoveUntil(
-                                        '/order-status',
-                                        (route) =>
-                                            route.settings.name == '/home',
-                                        arguments: {
-                                          'status': OrderStatus.success,
-                                          'id': id,
-                                        },
-                                      );
-                                    },
-                                    razorPayPaymentId: result.paymentId,
-                                  );
-                                  orderProvider
-                                      .checkIfInPendingPayments(result.orderId);
-                                }, onFailure: (failure, razorPayorderId) {
-                                  orderProvider.addOrder(
-                                      cartProvider.cart.map((e) {
-                                        final product = products
-                                            .where((element) =>
-                                                element.id == e.productId)
-                                            .first;
-                                        return OrderItem(
-                                          productId: e.productId,
-                                          productName: product.name,
-                                          size: product.price[e.size].quantity,
-                                          quantity: e.quantity,
-                                          price: product
-                                              .discountedPrices[e.size].price,
-                                        );
-                                      }).toList(),
-                                      coupon,
-                                      PaymentMethod(
-                                        name: 'Failure',
-                                      ),
-                                      address!,
-                                      cartProvider,
-                                      productProvider,
-                                      razorPayorderId ?? '',
-                                      onOrderPlaced: (id) {
+                                // RazorPayIntegration razorPayIntegration =
+                                //     RazorPayIntegration(
+                                //         onSuccess: (result) async {
+                                //   var basicAuth = base64Encode(utf8.encode(
+                                //       '${RazorpaySecret.keyId}:${RazorpaySecret.keySecret}'));
+                                //   final paymentDetailsResponse = await get(
+                                //     Uri.parse(
+                                //       'https://api.razorpay.com/v1/payments/${result.paymentId}/?expand[]=card',
+                                //     ),
+                                //     headers: {
+                                //       'Authorization': 'Basic $basicAuth'
+                                //     },
+                                //   );
+                                //   final paymentDetails =
+                                //       json.decode(paymentDetailsResponse.body);
+                                //   print(paymentDetails);
+                                orderProvider.addOrder(
+                                  cartProvider.cart.map((e) {
+                                    final product = products
+                                        .where((element) =>
+                                            element.id == e.productId)
+                                        .first;
+                                    return OrderItem(
+                                      productId: e.productId,
+                                      productName: product.name,
+                                      size: product.price[e.size].quantity,
+                                      quantity: e.quantity,
+                                      price: product
+                                              .discountedPrices[e.size].price ??
+                                          0,
+                                    );
+                                  }).toList(),
+                                  coupon,
+                                  const CashOnDeliveryPaymentMethod(),
+                                  address!,
+                                  cartProvider,
+                                  productProvider,
+                                  "ORDER_ID_${DateTime.now().millisecondsSinceEpoch}",
+                                  onOrderPlaced: (id) {
                                     Navigator.of(context)
                                         .pushNamedAndRemoveUntil(
                                       '/order-status',
                                       (route) => route.settings.name == '/home',
                                       arguments: {
-                                        'status': OrderStatus.failed,
+                                        'status': OrderStatus.success,
                                         'id': id,
                                       },
                                     );
-                                  }, isFailure: true);
-                                  orderProvider.checkIfInPendingPayments(
-                                      razorPayorderId);
-                                });
-                                razorPayIntegration.initializeRazorpay();
-                                razorPayIntegration.openRazorpay(
-                                  FirebaseAuth.instance.currentUser?.uid ?? "",
-                                  amount: (cartProvider.calculateTotalPrice(
-                                                  products: products) -
-                                              (coupon == null
-                                                  ? 0
-                                                  : (min(
-                                                      coupon!
-                                                          .maximumDiscountAmount,
-                                                      coupon!.type ==
-                                                              DiscountType
-                                                                  .percentage
-                                                          ? cartProvider
-                                                                  .calculateTotalPrice(
-                                                                      products:
-                                                                          products) *
-                                                              (coupon!
-                                                                  .discount) /
-                                                              100
-                                                          : coupon!.discount))))
-                                          .ceil() *
-                                      100,
-                                  currency: 'INR',
-                                  businessName: 'Bheeshma Naturals',
-                                  receipt: 'receipt#001',
-                                  prefill: Prefill(
-                                    userContact: FirebaseAuth
-                                        .instance.currentUser?.phoneNumber,
-                                  ),
-                                  description: 'Order from Bheeshma Naturals',
+                                  },
+                                  razorPayPaymentId:
+                                      "ORDER_ID_${DateTime.now().millisecondsSinceEpoch}",
                                 );
+                                // orderProvider
+                                //     .checkIfInPendingPayments(result.orderId);
+                                // }, onFailure: (failure, razorPayorderId) {
+                                //   orderProvider.addOrder(
+                                //       cartProvider.cart.map((e) {
+                                //         final product = products
+                                //             .where((element) =>
+                                //                 element.id == e.productId)
+                                //             .first;
+                                //         return OrderItem(
+                                //           productId: e.productId,
+                                //           productName: product.name,
+                                //           size: product.price[e.size].quantity,
+                                //           quantity: e.quantity,
+                                //           price: product
+                                //                   .discountedPrices[e.size]
+                                //                   .price ??
+                                //               0,
+                                //         );
+                                //       }).toList(),
+                                //       coupon,
+                                //       PaymentMethod(
+                                //         name: 'Failure',
+                                //       ),
+                                //       address!,
+                                //       cartProvider,
+                                //       productProvider,
+                                //       razorPayorderId ?? '',
+                                //       onOrderPlaced: (id) {
+                                //     Navigator.of(context)
+                                //         .pushNamedAndRemoveUntil(
+                                //       '/order-status',
+                                //       (route) => route.settings.name == '/home',
+                                //       arguments: {
+                                //         'status': OrderStatus.failed,
+                                //         'id': id,
+                                //       },
+                                //     );
+                                //   }, isFailure: true);
+                                //   orderProvider.checkIfInPendingPayments(
+                                //       razorPayorderId);
+                                // });
+                                // razorPayIntegration.initializeRazorpay();
+                                // razorPayIntegration.openRazorpay(
+                                //   FirebaseAuth.instance.currentUser?.uid ?? "",
+                                //   amount: (cartProvider.calculateTotalPrice(
+                                //                   products: products) -
+                                //               (coupon == null
+                                //                   ? 0
+                                //                   : (min(
+                                //                       coupon!
+                                //                           .maximumDiscountAmount,
+                                //                       coupon!.type ==
+                                //                               DiscountType
+                                //                                   .percentage
+                                //                           ? cartProvider
+                                //                                   .calculateTotalPrice(
+                                //                                       products:
+                                //                                           products) *
+                                //                               (coupon!
+                                //                                   .discount) /
+                                //                               100
+                                //                           : coupon!.discount))))
+                                //           .ceil() *
+                                //       100,
+                                //   currency: 'INR',
+                                //   businessName: 'Bheeshma Naturals',
+                                //   receipt: 'receipt#001',
+                                //   prefill: Prefill(
+                                //     userContact: FirebaseAuth
+                                //         .instance.currentUser?.phoneNumber,
+                                //   ),
+                                //   description: 'Order from Bheeshma Naturals',
+                                // );
                               },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,

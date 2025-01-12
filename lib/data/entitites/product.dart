@@ -1,5 +1,4 @@
 import 'package:bheeshmaorganics/data/entitites/category.dart';
-import 'package:bheeshmaorganics/data/utils/discount_type.dart';
 
 class Product {
   final String docId;
@@ -27,7 +26,8 @@ class Product {
     return price
         .map((product) => QuantityInfo(
               quantity: product.quantity,
-              price: product.price - product.discount,
+              price:
+                  product.price != null ? product.price! - product.discount : 0,
               stock: product.stock,
               discount: product.discount,
             ))
@@ -51,7 +51,7 @@ class Product {
 
 class QuantityInfo {
   final String quantity;
-  final double price;
+  final double? price;
   final int stock;
   final int discount;
   const QuantityInfo({

@@ -14,10 +14,12 @@ class CartProvider extends ChangeNotifier {
         0,
         (previousValue, element) =>
             previousValue +
-            (products
-                    .where((product) => product.id == element.productId)
-                    .first
-                    .discountedPrices[element.size].price *
+            ((products
+                        .where((product) => product.id == element.productId)
+                        .first
+                        .discountedPrices[element.size]
+                        .price ??
+                    0) *
                 element.quantity));
   }
 

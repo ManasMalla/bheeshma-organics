@@ -120,7 +120,7 @@ class _ProductPageState extends State<ProductPage> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              "MRP: ₹${product.price[quantitySelection].price.toInt()}",
+                                              "MRP: ₹${(product.price[quantitySelection].price?.toInt() ?? 0)}",
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .titleMedium
@@ -135,7 +135,7 @@ class _ProductPageState extends State<ProductPage> {
                                               width: 4,
                                             ),
                                             Text(
-                                              "(${((product.price.first.discount * 100) / product.price.first.price).round()}% off)",
+                                              "(${((product.price.first.discount * 100) / (product.price.first.price ?? 0)).round()}% off)",
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .titleMedium

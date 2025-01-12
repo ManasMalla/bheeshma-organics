@@ -57,7 +57,7 @@ class ExploreProductCard extends StatelessWidget {
                 children: [
                   product.price.first.discount > 0
                       ? Text(
-                          '₹${product.discountedPrices.first.price.toInt()}',
+                          '₹${product.discountedPrices.first.price?.toInt() ?? 0}',
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class ExploreProductCard extends StatelessWidget {
                     width: product.price.first.discount > 0 ? 6 : 0,
                   ),
                   Text(
-                    '₹${product.price.first.price.toInt()}',
+                    '₹${product.price.first.price?.toInt() ?? 0}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         decoration: product.price.first.discount > 0
                             ? TextDecoration.lineThrough
@@ -86,7 +86,7 @@ class ExploreProductCard extends StatelessWidget {
                       ? Padding(
                           padding: const EdgeInsets.only(left: 4),
                           child: Text(
-                            '(${((product.price.first.discount * 100) / product.price.first.price).round()}${'%'} off)',
+                            '(${((product.price.first.discount * 100) / (product.price.first.price ?? 0)).round()}${'%'} off)',
                             style: Theme.of(context)
                                 .textTheme
                                 .labelSmall

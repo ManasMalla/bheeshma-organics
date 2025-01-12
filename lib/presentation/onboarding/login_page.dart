@@ -51,7 +51,8 @@ class _LoginPageState extends State<LoginPage> {
                   horizontal: 24,
                 )),
             onPressed: () {
-              FirebaseAuth.instance.signInAnonymously().then((value) {
+              FirebaseAuth.instance.signInAnonymously().then((value) async {
+                await fetchDataFromDatabase(context);
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     '/home', (route) => route.settings.name == '/splash');
               });
@@ -193,7 +194,8 @@ class _LoginPageState extends State<LoginPage> {
                                       FirebaseAuth.instance
                                           .signInWithCredential(
                                               phoneAuthCredential)
-                                          .then((value) {
+                                          .then((value) async {
+                                        await fetchDataFromDatabase(context);
                                         if (value.user != null) {
                                           Navigator.of(context)
                                               .pushNamedAndRemoveUntil(
@@ -491,50 +493,48 @@ class _OTPBottomSheetState extends State<OTPBottomSheet> {
       ],
     );
   }
+}
 
-  Future<void> fetchDataFromDatabase(context) async {
-    print("456");
-    if (FirebaseAuth.instance.currentUser == null) {
-      print("123");
-      return;
-    }
-    final categoryProvider =
-        Provider.of<CategoryProvider>(context, listen: false);
-    final couponProvider = Provider.of<CouponProvider>(context, listen: false);
-    final addressProvider =
-        Provider.of<AddressProvider>(context, listen: false);
-    final productProvider =
-        Provider.of<ProductProvider>(context, listen: false);
-    final wishlistProvider =
-        Provider.of<LikedItemsProvider>(context, listen: false);
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+Future<void> fetchDataFromDatabase(context) async {
+  print("456");
+  if (FirebaseAuth.instance.currentUser == null) {
+    print("123");
+    return;
+  }
+  final categoryProvider =
+      Provider.of<CategoryProvider>(context, listen: false);
+  final couponProvider = Provider.of<CouponProvider>(context, listen: false);
+  final addressProvider = Provider.of<AddressProvider>(context, listen: false);
+  final productProvider = Provider.of<ProductProvider>(context, listen: false);
+  final wishlistProvider =
+      Provider.of<LikedItemsProvider>(context, listen: false);
+  final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+  final cartProvider = Provider.of<CartProvider>(context, listen: false);
 
-    final advertisementProvider =
-        Provider.of<AdvertisementProvider>(context, listen: false);
-    final notificationsProvider =
-        Provider.of<NotificationProvider>(context, listen: false);
-    try {
-      await categoryProvider.fetchCategories().then((_) async {
-        print("categories");
-        await categoryProvider.fetchSubcategories().then((_) async {
-          await couponProvider.fetchCoupons().then((_) async {
-            await addressProvider.fetchAddresses().then((_) async {
-              await productProvider
-                  .fetchProducts(categoryProvider.categories,
-                      categoryProvider.subcategories)
-                  .then((_) async {
-                print(_);
-                await wishlistProvider.fetchWishlist().then((_) async {
-                  await orderProvider
-                      .fetchOrders(addressProvider.addresses)
-                      .then((_) async {
-                    await cartProvider.fetchCart().then((_) async {
-                      await advertisementProvider
-                          .fetchImageAdvertisements()
-                          .then((_) async {
-                        await notificationsProvider.fetchNotification();
-                      });
+  final advertisementProvider =
+      Provider.of<AdvertisementProvider>(context, listen: false);
+  final notificationsProvider =
+      Provider.of<NotificationProvider>(context, listen: false);
+  try {
+    await categoryProvider.fetchCategories().then((_) async {
+      print("categories");
+      await categoryProvider.fetchSubcategories().then((_) async {
+        await couponProvider.fetchCoupons().then((_) async {
+          await addressProvider.fetchAddresses().then((_) async {
+            await productProvider
+                .fetchProducts(
+                    categoryProvider.categories, categoryProvider.subcategories)
+                .then((_) async {
+              print(_);
+              await wishlistProvider.fetchWishlist().then((_) async {
+                await orderProvider
+                    .fetchOrders(addressProvider.addresses)
+                    .then((_) async {
+                  await cartProvider.fetchCart().then((_) async {
+                    await advertisementProvider
+                        .fetchImageAdvertisements()
+                        .then((_) async {
+                      await notificationsProvider.fetchNotification();
                     });
                   });
                 });
@@ -543,13 +543,13 @@ class _OTPBottomSheetState extends State<OTPBottomSheet> {
           });
         });
       });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(BheeshmaSnackbar(
-        title: "Error fetching fresh content!",
-        message:
-            "We're trying our best to get things right again. However, you can still explore our wide range of products, which are fresh for sure.",
-        contentType: ContentType.failure,
-      ));
-    }
+    });
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(BheeshmaSnackbar(
+      title: "Error fetching fresh content!",
+      message:
+          "We're trying our best to get things right again. However, you can still explore our wide range of products, which are fresh for sure.",
+      contentType: ContentType.failure,
+    ));
   }
 }

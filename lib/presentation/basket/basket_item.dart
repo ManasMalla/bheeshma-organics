@@ -91,7 +91,7 @@ class BasketItem extends StatelessWidget {
                   isReview
                       ? SizedBox()
                       : Text(
-                          "₹${product.discountedPrices[quantityChoice].price * (quantity == 0 ? 1 : quantity)}",
+                          "₹${(product.discountedPrices[quantityChoice].price ?? 0) * (quantity == 0 ? 1 : quantity)}",
                           style:
                               Theme.of(context).textTheme.titleLarge?.copyWith(
                                     fontSize: 18,
@@ -147,7 +147,7 @@ class BasketItem extends StatelessWidget {
                             horizontal: 24,
                           ),
                           child: Text(
-                            "₹${product.discountedPrices[quantityChoice].price * (quantity == 0 ? 1 : quantity)}",
+                            "₹${(product.discountedPrices[quantityChoice].price ?? 0) * (quantity == 0 ? 1 : quantity)}",
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge

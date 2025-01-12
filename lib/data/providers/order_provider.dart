@@ -291,7 +291,7 @@ class OrderProvider extends ChangeNotifier {
                   productName: product.name,
                   size: product.price[e.size].quantity,
                   quantity: e.quantity,
-                  price: product.discountedPrices[e.size].price,
+                  price: product.discountedPrices[e.size].price ?? 0,
                 );
               }).toList(),
               null,
